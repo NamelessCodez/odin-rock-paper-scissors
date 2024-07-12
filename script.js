@@ -19,50 +19,34 @@ function getComputerChoice() {
     return computerChoice;
 }
 
-// GET Player choice
-function getPlayerChoice() {
-    playerChoice = prompt("Enter your choice");
-    playerChoice = playerChoice.toLowerCase();
-    if (playerChoice === 'rock' || playerChoice === 'paper' || playerChoice === 'scissors') {
-        return playerChoice;
-    } else {
-        console.log('Invalid input');
-        return null;
-    }
-}
 
 let playerScore = 0;
 let computerScore = 0; 
 
-function playRound() {
-    let playerChoice = getPlayerChoice();
+function playRound(playerChoice) {
     let computerChoice = getComputerChoice();
-    let winner = checkWinner(playerChoice, computerChoice);
+    displayChoices(playerChoice, computerChoice);
+    let winner = checkRoundWinner(playerChoice, computerChoice);
     if (winner === 'Player') {
-        console.log(`You win! ${playerChoice} beats ${computerChoice}`);
         playerScore++;
+        displayResults(`You win! ${playerChoice} beats ${computerChoice}`);
     } else if ( winner === 'Computer') {
-        console.log(`You lose! ${computerChoice} beats ${playerChoice}`);
         computerScore++;
+        displayResults(`You lose! ${computerChoice} beats ${playerChoice}`);
     } else if (playerChoice != null) {
-        console.log(`It's a tie!`);
-    }
-    
-}
-function playGame() {
-    for (let i=0; i < 5; i++) {
-        playRound();
-    }
-    if (playerScore < computerScore) {
-        console.log(`You lose! Your score is ${playerScore}, while the computer's score is ${computerScore}`);
-    } else if (playerScore > computerScore) {
-        console.log(`You win! Your score is ${playerScore}, while the computer's score is ${computerScore}`);
-    } else {
-        console.log(`It's a tie`);
+        displayResults(`It's a tie!`);
     }
 }
 
-function checkWinner(playerChoice, computerChoice) {
+function displayChoices (playerChoice, computerChoice) {
+    const playerChoiceBoard = document.querySelector('.player-choice');
+    playerChoiceBoard.textContent = `Your choice: ${playerChoice}`;
+
+    const computerChoiceBoard = document.querySelector('.computer-choice');
+    computerChoiceBoard.textContent = `Computer's choice: ${computerChoice}`;
+   
+}
+function checkRoundWinner(playerChoice, computerChoice) {
     if (playerChoice === computerChoice) {
         return;
     } else {
@@ -84,11 +68,61 @@ function checkWinner(playerChoice, computerChoice) {
             switch (computerChoice) {
                 case 'rock':
                     return 'Computer';
+                    
                 case 'paper':                  
                     return 'Player';
+            
             }
         }
     }
 }
+function displayResults (result) {
+    const display = document.querySelector('.result-display');
+    const playerScoreBoard = document.querySelector('.player-score');
+    const computerScoreBoard = document.querySelector('.computer-score');
+    display.textContent = result;
+    playerScoreBoard.textContent = `Your score: ${playerScore}`;
+    computerScoreBoard.textContent = `Computer's score: ${computerScore}`;
+}
 
-playGame();
+function checkGameWinner () {
+    if (playerScore === 5) {
+        return 'player';
+    } else if (computerScore === 5) {
+        return 'computer';
+    } else {
+        return null;
+    }
+}
+function endGame(winner) {
+    const buttonContainer = document.querySelector('.game-buttons');
+    buttonContainer.remove();
+    const display = document.querySelector('.result-display');
+    display.textContent = `the winner of the game is ${winner}! Please refresh the page to restart`;
+}
+function playGame () {
+    const rockButton = document.querySelector('.rock-button');
+    rockButton.addEventListener('click', () => {
+        playRound('rock');
+        if (checkGameWinner()) {
+            endGame(checkGameWinner());
+        }
+    });
+    const paperButton = document.querySelector('.paper-button');
+    paperButton.addEventListener('click', () => {
+        playRound('paper');
+        if (checkGameWinner()) {
+            endGame(checkGameWinner());
+        }
+    });
+    const scissorsButton = document.querySelector('.scissors-button');
+    scissorsButton.addEventListener('click', () => {
+        playRound('scissors');
+        if (checkGameWinner()) {
+            endGame(checkGameWinner());
+        }
+    }); 
+}
+
+
+playGame()
